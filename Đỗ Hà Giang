@@ -1,0 +1,54 @@
+# Import thư viện cần thiết
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+# Thiết lập seed ngẫu nhiên để tái tạo kết quả
+np.random.seed(42)
+
+# Tạo dữ liệu giả định gồm 100 quan sát
+n = 100  # Số lượng quan sát
+
+# Tạo 2 biến độc lập ngẫu nhiên từ phân phối chuẩn
+X1 = np.random.randn(n)
+X2 = np.random.randn(n)
+
+# Tính toán log-odds từ X1 và X2 (ví dụ: log-odds = 0.5 * X1 - 0.3 * X2)
+log_odds = 0.5 * X1 - 0.3 * X2
+
+# Tính xác suất từ log-odds bằng hàm sigmoid
+prob = 1 / (1 + np.exp(-log_odds))
+
+# Biến phụ thuộc Y (0 hoặc 1) với xác suất đã tính
+Y = np.random.binomial(1, prob)  # Biến ngẫu nhiên với xác suất P(Y=1)
+
+# Tạo DataFrame để lưu trữ dữ liệu
+data = pd.DataFrame({'X1': X1, 'X2': X2, 'Y': Y})
+
+# Hiển thị 5 dòng dữ liệu đầu tiên
+print("Dữ liệu đầu vào:")
+print(data.head())
+
+# Chia dữ liệu thành tập huấn luyện và tập kiểm tra (70% huấn luyện, 30% kiểm tra)
+X = data[['X1', 'X2']]  # Các biến độc lập
+y = data['Y']  # Biến phụ thuộc
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Khởi tạo và huấn luyện mô hình hồi quy logistic
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Dự đoán trên tập kiểm tra
+y_pred = model.predict(X_test)
+
+# Đánh giá mô hình
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+# In kết quả
+print(f"\nĐộ chính xác của mô hình: {accuracy:.2f}")
+print("\nMa trận nhầm lẫn:")
+print(conf_matrix)
